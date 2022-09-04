@@ -221,6 +221,7 @@ function deleteBook(bookId){
 
     books.splice(bookTarget, 1);
     document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
 }
 
 function findBook(bookId){
