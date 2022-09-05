@@ -267,9 +267,9 @@ function editBook(bookId){
     document.getElementById('add-form').classList.add('hide');
     document.getElementById('edit-form').classList.remove('hide');
 
-    const submitButton = document.getElementById('editSubmit');
-    submitButton.addEventListener('click', function(){
-        bookTarget.id = document.getElementById('editTitle').value;
+    const editButton = document.getElementById('editSubmit');
+    editButton.addEventListener('click', function(){
+        bookTarget.title = document.getElementById('editTitle').value;
         bookTarget.author = document.getElementById('editAuthor').value;
         bookTarget.year = document.getElementById('editYear').value;
         bookTarget.isCompleted = document.getElementById('editIsCompleted').checked;
