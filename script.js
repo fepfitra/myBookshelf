@@ -1,4 +1,5 @@
 const books = [];
+let editingId = null;
 const RENDER_EVENT = 'render-book';
 const SAVED_EVENT = 'saved-book';
 const STORAGE_KEY = 'BOOKSHELF_APPS';
@@ -25,6 +26,7 @@ function loadDataFromStorage(){
 }
 
 function refresh(){
+    editingId = null;
     document.getElementById('title').value = '';
     document.getElementById('author').value ='';
     document.getElementById('year').value = '';
@@ -122,10 +124,23 @@ document.addEventListener('DOMContentLoaded', function(){
         event.preventDefault();
     });
 
+    const editSubmitButton = document.getElementById('editSubmit');
+    editSubmitButton.addEventListener('click', function(event){
+        editSubmit(editingId);
+        refresh();
+        event.preventDefault();
+    });
+
+    const cancelButton = document.getElementById('cancel');
+    cancelButton.addEventListener('click', function(){
+        editCancel();
+        refresh();
+    });
+
     const find = document.getElementById('find');
     find.addEventListener('input', function(){
         renderAction(find.value);
-    })
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -135,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 document.addEventListener(RENDER_EVENT, function(){
-    renderAction(document.getElementById('find').value);
+    renderAction('');
 });
 
 function renderAction(value){
@@ -256,8 +271,9 @@ function toUncompleted(bookId){
 
 function editBook(bookId){
     const bookTarget = findBook(bookId); 
-
     if(bookTarget == null) return;
+
+    editingId = bookTarget.id;
     
     document.getElementById('editTitle').value = bookTarget.title;
     document.getElementById('editAuthor').value = bookTarget.author;
@@ -266,26 +282,26 @@ function editBook(bookId){
 
     document.getElementById('add-form').classList.add('hide');
     document.getElementById('edit-form').classList.remove('hide');
+    
+}
 
-    const editButton = document.getElementById('editSubmit');
-    editButton.addEventListener('click', function(){
-        bookTarget.title = document.getElementById('editTitle').value;
-        bookTarget.author = document.getElementById('editAuthor').value;
-        bookTarget.year = document.getElementById('editYear').value;
-        bookTarget.isCompleted = document.getElementById('editIsCompleted').checked;
-        
-        document.getElementById('add-form').classList.remove('hide');
-        document.getElementById('edit-form').classList.add('hide');
+function editSubmit(bookId){
+    const bookTarget = findBook(bookId); 
+    if(bookTarget == null) return;
 
-        document.dispatchEvent(new Event(RENDER_EVENT));
-        refresh();
-        saveData();
-    });
+    bookTarget.title = document.getElementById('editTitle').value;
+    bookTarget.author = document.getElementById('editAuthor').value;
+    bookTarget.year = document.getElementById('editYear').value;
+    bookTarget.isCompleted = document.getElementById('editIsCompleted').checked;
+    
+    document.getElementById('add-form').classList.remove('hide');
+    document.getElementById('edit-form').classList.add('hide');
+    
+    document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
+}
 
-    const cancelButton = document.getElementById('cancel');
-    cancelButton.addEventListener('click', function(){
-        document.getElementById('add-form').classList.remove('hide');
-        document.getElementById('edit-form').classList.add('hide');
-        refresh();
-    })
+function editCancel(){
+    document.getElementById('add-form').classList.remove('hide');
+    document.getElementById('edit-form').classList.add('hide');
 }
